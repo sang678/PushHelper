@@ -17,14 +17,10 @@
     <script src="//code.jquery.com/jquery.js"></script>
     <!-- 모든 합쳐진 플러그인을 포함하거나 (아래) 필요한 각각의 파일들을 포함하세요 -->
     <script src="../resources/js/bootstrap.min.js"></script>
- 
     <!-- Respond.js 으로 IE8 에서 반응형 기능을 활성화하세요 (https://github.com/scottjehl/Respond) -->
     <script src="../resources/js/respond.min.js"></script>
-
-
 	<!-- main페이지용 css -->
 	<link href="../resources/css/sendit.css" rel="stylesheet" />
-
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>Push Helper - 상세 내역</title>
 </head>
@@ -40,28 +36,30 @@
 					<table class="table table-condensed" style="">
 						<thead>
 							<tr align="center" bgcolor="#757575" style="color: white">
-								<td style="width: 20%"><b>수신자</b></td>
-								<td style="width: 45%"><b>발송일시</b></td>
-								<td style="width: 45%"><b>결과</b></td>
+								<td style="width: 10%"><b>수신자</b></td>
+								<td style="width: 10%"><b>발송일시</b></td>
+								<td style="width: 10%"><b>Push결과</b></td>
 								<td style="width: 10%"><b>수신시간</b></td>
-								<td style="width: 5%"><b>오픈시간</b></td>
-								<td style="width: 5%"><b>클릭시간</b></td>
-								<td style="width: 5%"><b>결과</b></td>
-								<td style="width: 5%"><b>발송일시</b></td>
-								<td style="width: 5%"><b>수신일시</b></td>
+								<td style="width: 10%"><b>오픈시간</b></td>
+								<td style="width: 10%"><b>클릭시간</b></td>
+								<td style="width: 10%"><b>SMS결과</b></td>
+								<td style="width: 10%"><b>발송일시</b></td>
+								<td style="width: 10%"><b>수신일시</b></td>
 							</tr>
 						</thead>
 						
 						<tbody>
-							<c:forEach var="list" items="${detailInfo}">
+							<c:forEach var="list" items="${detail}">
 							<tr align="center">
-								<td class="tal"><c:out value="${list.custId}" /></td>
-								<td class="listResult"><c:out value="${list.regDate}" /></td>
-								<td class="tal"><c:out value="${list.redCd}" /></td>
-								<td class="tal"><c:out value="${list.resultTime}" /></td>
-								<td class="tal"><c:out value="${list.readTime}" /></td>
-								<td class="tal"><c:out value="${list.clickTime}" /></td>
-								<td class="tal"><c:out value="${list.click}" /></td>
+								<td><c:out value="${list.custId}" /></td>
+								<td><c:out value="<% %>${list.regDate}" /></td>
+								<td><c:out value="${list.pushMessage}" /></td>
+								<td><c:out value="${list.resultTime}" /></td>
+								<td><c:out value="${list.readTime}" /></td>
+								<td><c:out value="${list.clickTime}" /></td>
+								<td><c:out value="${list.smsMessage}" /></td> 
+								<td><c:out value="${list.sentDate}" /></td>
+								<td><c:out value="${list.rsltDate}" /></td>
 							</tr>
 							</c:forEach>
 						</tbody>

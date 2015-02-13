@@ -1,35 +1,70 @@
 package com.humuson.pushhelper.bean;
 
+import java.util.Date;
+
 public class DetailInfo {
 	private String custId;
 	private String reqUid;
-	private String regDate;
-	private String resultTime;
-	private String readTime;
-	private String clickTime;
+	private Date regDate;
+	private Date resultTime;
+	private Date readTime;
+	private Date clickTime;
 	private String smsMessage;
 	private String pushMessage;
-	private String sentDate;
-	private String rsltDate;
+	private Date sentDate;
+	private Date rsltDate;
 	private String resCd;
 	private String result;
-	public DetailInfo(String custId, String reqUid, String regDate,
-			String ressultTime, String readTime, String clickTime,
-			String smsMessage, String pushMessage, String sendDate,
-			String rsltDate, String resCd) {
-		this.custId = custId;
-		this.reqUid = reqUid;
-		this.regDate = regDate;
-		this.resultTime = ressultTime;
-		this.readTime = readTime;
-		this.clickTime = clickTime;
-		this.smsMessage = smsMessage;
-		this.pushMessage = pushMessage;
-		this.sentDate = sendDate;
-		this.rsltDate = rsltDate;
-		this.resCd = resCd;
-	}
 	
+	
+	public Date getRsltDate() {
+		return rsltDate;
+	}
+
+	public Date getRegDate() {
+		return regDate;
+	}
+
+	public void setRegDate(Date regDate) {
+		this.regDate = regDate;
+	}
+
+	public Date getResultTime() {
+		return resultTime;
+	}
+
+	public void setResultTime(Date resultTime) {
+		this.resultTime = resultTime;
+	}
+
+	public Date getReadTime() {
+		return readTime;
+	}
+
+	public void setReadTime(Date readTime) {
+		this.readTime = readTime;
+	}
+
+	public Date getClickTime() {
+		return clickTime;
+	}
+
+	public void setClickTime(Date clickTime) {
+		this.clickTime = clickTime;
+	}
+
+	public Date getSentDate() {
+		return sentDate;
+	}
+
+	public void setSentDate(Date sentDate) {
+		this.sentDate = sentDate;
+	}
+
+	public void setRsltDate(Date rsltDate) {
+		this.rsltDate = rsltDate;
+	}
+
 	public String getResult() {
 		return result;
 	}
@@ -45,10 +80,9 @@ public class DetailInfo {
 	public void setResCd(String resCd) {
 		this.resCd = resCd;
 	}
+	
+	
 
-	public DetailInfo() {
-		super();
-	}
 	public String getCustId() {
 		return custId;
 	}
@@ -61,30 +95,8 @@ public class DetailInfo {
 	public void setReqUid(String reqUid) {
 		this.reqUid = reqUid;
 	}
-	public String getRegDate() {
-		return regDate;
-	}
-	public void setRegDate(String regDate) {
-		this.regDate = regDate;
-	}
-	public String getRessultTime() {
-		return resultTime;
-	}
-	public void setRessultTime(String ressultTime) {
-		this.resultTime = ressultTime;
-	}
-	public String getReadTime() {
-		return readTime;
-	}
-	public void setReadTime(String readTime) {
-		this.readTime = readTime;
-	}
-	public String getClickTime() {
-		return clickTime;
-	}
-	public void setClickTime(String clickTime) {
-		this.clickTime = clickTime;
-	}
+
+	
 	public String getSmsMessage() {
 		return smsMessage;
 	}
@@ -97,26 +109,29 @@ public class DetailInfo {
 	public void setPushMessage(String pushMessage) {
 		this.pushMessage = pushMessage;
 	}
-	public String getSendDate() {
-		return sentDate;
-	}
-	public void setSendDate(String sendDate) {
-		this.sentDate = sendDate;
-	}
-	public String getRsltDate() {
-		return rsltDate;
-	}
-	public void setRsltDate(String rsltDate) {
+
+	public DetailInfo(String custId, String reqUid, Date regDate,
+			Date resultTime, Date readTime, Date clickTime, String smsMessage,
+			String pushMessage, Date sentDate, Date rsltDate, String resCd,
+			String result) {
+		super();
+		this.custId = custId;
+		this.reqUid = reqUid;
+		this.regDate = regDate;
+		this.resultTime = resultTime;
+		this.readTime = readTime;
+		this.clickTime = clickTime;
+		this.smsMessage = smsMessage;
+		this.pushMessage = pushMessage;
+		this.sentDate = sentDate;
 		this.rsltDate = rsltDate;
+		this.resCd = resCd;
+		this.result = result;
 	}
-	@Override
-	public String toString() {
-		return "DetailInfo [custId=" + custId + ", reqUid=" + reqUid
-				+ ", regDate=" + regDate + ", ressultTime=" + resultTime
-				+ ", readTime=" + readTime + ", clickTime=" + clickTime
-				+ ", smsMessage=" + smsMessage + ", pushMessage=" + pushMessage
-				+ ", sendDate=" + sentDate + ", rsltDate=" + rsltDate + "]";
+
+	public DetailInfo() {
 	}
+	
 	
 	
 }

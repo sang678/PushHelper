@@ -40,10 +40,7 @@
 		</div>
 	</div>
 </body>
-
 </html>
-
-
 <script type="text/javascript">		
 <%if(request.getParameter("fail") != null){%>
 	alert("로그인실패")

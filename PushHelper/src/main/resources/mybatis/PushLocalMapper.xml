@@ -44,13 +44,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<!--상세결과 페이지 정보  -->
 	<select id="selectDetailResult" parameterType="String" resultMap="detailInfo">
 		SELECT
-			pr.CUST_ID, pr.REQ_UID, pr.REG_DATE, pr.RESULT_TIME, 
-			pr.READ_TIME, pr.CLICK_TIME, pe.MESSAGE AS PUSHMESSAGE, sr.SENT_DATE, 
-			sr.RSLT_DATE, se.MESSAGE AS SMSMESSAGE, pr.RES_CD
+		pr.CUST_ID, pr.REQ_UID, pr.REG_DATE, pr.RESULT_TIME,
+		pr.READ_TIME, pr.CLICK_TIME, pe.MESSAGE as PUSHMESSAGE, 
+		sr.SENT_DATE, sr.RSLT_DATE, se.message as SMSMESSAGE,
+		pr.RES_CD,sr.RESULT
 		FROM push_raw AS pr
-		LEFT JOIN sms_raw AS sr ON pr.REQ_UID = sr.REQ_UID
-		LEFT JOIN sms_error AS se ON sr.RESULT = se.RESULT
-		LEFT JOIN push_error AS pe ON pr.RES_CD = pe.RES_CD
+		LEFT JOIN sms_raw AS sr ON pr.req_uid = sr.req_uid  and pr.CUST_ID = sr.CALL_TO
+		LEFT JOIN sms_error AS se ON sr.RESULT = se.result
+		LEFT JOIN push_error AS pe ON pr.res_cd = pe.res_cd
+		WHERE pr.REQ_UID = #{reqUid}
 	</select>
 	
 	<!--메인페이지에 보여줄 리스트 정보  -->

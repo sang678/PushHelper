@@ -89,8 +89,9 @@ public class PushHelperController {
 	public ModelAndView detailInfo(HttpSession session,@RequestParam("reqUid") String reqUid) {
 		ModelAndView mv = new ModelAndView();
 		
-		mv.addObject("detailInfo", pushhelperService.selectDetailResult(reqUid));
+		mv.addObject("detail", pushhelperService.selectDetailResult(reqUid));
 		mv.setViewName("detailview");
+		
 		return mv;
 	}
 	
