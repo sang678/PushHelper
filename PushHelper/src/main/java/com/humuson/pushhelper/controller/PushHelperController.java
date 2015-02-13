@@ -311,7 +311,7 @@ public class PushHelperController {
 		
 		SmsStatistics pageInfo = 
 				new SmsStatistics(0, null, (page-1)*10, 0, 
-						((Member)session.getAttribute("loginUser")).getMb_seq(),	null, null, null,null) ;
+						((Member)session.getAttribute("loginUser")).getMb_seq(), null, null, null,null) ;
 		
 		mv.addObject("statisticsList",pushhelperService.selectSmsStatistics(pageInfo));
 		SmsStatistics temp = pushhelperService.selectResultSum(pageInfo);

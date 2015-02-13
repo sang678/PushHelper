@@ -52,7 +52,7 @@
 							<c:forEach var="list" items="${detail}">
 							<tr align="center">
 								<td><c:out value="${list.custId}" /></td>
-								<td><c:out value="<% %>${list.regDate}" /></td>
+								<td><c:out value="${list.regDate}" /></td>
 								<td><c:out value="${list.pushMessage}" /></td>
 								<td><c:out value="${list.resultTime}" /></td>
 								<td><c:out value="${list.readTime}" /></td>
@@ -66,9 +66,7 @@
 					</table>
 				</div>
 			</div>
-		
-		
-	</div>
+		</div>
 </body>
 
 </html>

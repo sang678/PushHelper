@@ -1,67 +1,65 @@
 package com.humuson.pushhelper.bean;
 
-import java.util.Date;
 
 public class DetailInfo {
 	private String custId;
 	private String reqUid;
-	private Date regDate;
-	private Date resultTime;
-	private Date readTime;
-	private Date clickTime;
+	private String regDate;
+	private String resultTime;
+	private String readTime;
+	private String clickTime;
 	private String smsMessage;
 	private String pushMessage;
-	private Date sentDate;
-	private Date rsltDate;
+	private String sentDate;
+	private String rsltDate;
 	private String resCd;
 	private String result;
-	
-	
-	public Date getRsltDate() {
-		return rsltDate;
-	}
 
-	public Date getRegDate() {
+	public String getRegDate() {
 		return regDate;
 	}
 
-	public void setRegDate(Date regDate) {
+	public void setRegDate(String regDate) {
 		this.regDate = regDate;
 	}
 
-	public Date getResultTime() {
+	public String getResultTime() {
 		return resultTime;
 	}
 
-	public void setResultTime(Date resultTime) {
+	public void setResultTime(String resultTime) {
 		this.resultTime = resultTime;
 	}
 
-	public Date getReadTime() {
+	public String getReadTime() {
 		return readTime;
 	}
 
-	public void setReadTime(Date readTime) {
+	public void setReadTime(String readTime) {
 		this.readTime = readTime;
 	}
 
-	public Date getClickTime() {
+	public String getClickTime() {
 		return clickTime;
 	}
 
-	public void setClickTime(Date clickTime) {
+	public void setClickTime(String clickTime) {
 		this.clickTime = clickTime;
 	}
 
-	public Date getSentDate() {
+	public String getSentDate() {
 		return sentDate;
 	}
 
-	public void setSentDate(Date sentDate) {
+	public void setSentDate(String sentDate) {
 		this.sentDate = sentDate;
 	}
 
-	public void setRsltDate(Date rsltDate) {
+	public String getRsltDate() {
+		return rsltDate;
+	}
+
+	public void setRsltDate(String rsltDate) {
 		this.rsltDate = rsltDate;
 	}
 
@@ -110,11 +108,11 @@ public class DetailInfo {
 		this.pushMessage = pushMessage;
 	}
 
-	public DetailInfo(String custId, String reqUid, Date regDate,
-			Date resultTime, Date readTime, Date clickTime, String smsMessage,
-			String pushMessage, Date sentDate, Date rsltDate, String resCd,
-			String result) {
-		super();
+
+	public DetailInfo(String custId, String reqUid, String regDate,
+			String resultTime, String readTime, String clickTime,
+			String smsMessage, String pushMessage, String sentDate,
+			String rsltDate, String resCd, String result) {
 		this.custId = custId;
 		this.reqUid = reqUid;
 		this.regDate = regDate;
