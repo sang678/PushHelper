@@ -1,0 +1,28 @@
+span.validateText { color : blue; font-size:11pt; }
+
+/* header */
+#header { background-color : #EEE; vertical-align:middle; height:40px; }
+#header .header_name { font-weight:bold; font-size:15px; margin-left:25px; margin-top:8px; }
+#header .header_btn { margin-right:15px; margin-top:5px;}
+
+
+/* Section */
+div#article1 { text-align : center }
+#section #list ul {list-style : none; padding:0px; }
+#section #list ul li {list-style : none; overflow:hidden; text-overflow:ellipsis; font-weight:bold;  width:100%; white-space:nowrap; }
+#section #list ul .data_list_color1 { background-color : #F7F7F7 }
+#section #list ul .data_list_color2 { background-color : #FFFFFF }
+#section #list ul .list_title { font-size:18px; color:#2D5373; height:20px; cursor:pointer;}
+#section #list ul .list_call_result { display:block; width:100%; overflow:hidden; text-overflow:ellipsis;  }
+#section #list ul .list_call_to { font-size:18px; color:#2D5373; font-weight:bold;  }
+#section #list ul .list_result {  font-weight:bold;  white-space:nowrap; color : red;}
+#section #list ul .list_result_success { color: green }
+#section #list ul .list_result_wait { color: #ffa500 }
+
+.list_time { padding-top:5px; height:20px;}
+.file_input { margin-bottom:10px;}
+.list_success { color : green; margin-right: 8px;}
+.list_fail { color : red; } 
+.list_sum { font-size: 18px; margin-right: 8px;}
+.list_sentdate { }
+.list_info { margin-top:5px; font-weight:bold;}

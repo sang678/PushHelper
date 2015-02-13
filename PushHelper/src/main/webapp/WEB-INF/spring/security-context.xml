@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"	xmlns:beans="http://www.springframework.org/schema/beans"
+xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<http auto-config="true">
+		<intercept-url pattern="/push/*" access="ROLE_USER" />
+		<intercept-url pattern="/login/*" access="ROLE_USER" />
+		<form-login login-page="/login.jsp" default-target-url="/pushhelper/main.do" authentication-failure-url="/login.jsp?fail=1" always-use-default-target="true"/>
+		<logout logout-success-url="/newAccount/logout.do"/>
+		
+		<session-management>
+			<concurrency-control max-sessions="1" expired-url="/login.jsp?duplicate=1"/>
+		</session-management> 
+	</http>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="loginService">
+			<password-encoder ref="passwordEncoder"></password-encoder>
+		</authentication-provider>
+	</authentication-manager>
+	
+	<beans:bean id="loginService" class="com.humuson.pushhelper.service.LoginServiceImpl" />
+	<beans:bean id="passwordEncoder" class="com.humuson.pushhelper.crypt.Sha256PasswordEncoder" />
+	
+	
+
+</beans:beans>

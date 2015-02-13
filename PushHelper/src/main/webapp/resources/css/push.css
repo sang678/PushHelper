@@ -1,0 +1,96 @@
+/* CSS Document 2010-10*/
+
+/* header */
+#header { background-color : #EEE; vertical-align:middle; height:40px; }
+#header .header_name { font-weight:bold; font-size:15px; margin-left:25px; margin-top:8px; }
+#header .header_btn { margin-right:15px; margin-top:5px;}
+
+
+.listResult { font-size:18px; color:#2D5373; height:20px; cursor:pointer;}
+
+.bs-example {
+margin-left: 0;
+margin-right: 0;
+background-color: rgba(240, 227, 227, 0.49);
+border-width: 1px;
+border-color: #ddd;
+border-radius: 20px;
+box-shadow: none;
+}
+
+html, body {
+	height: 100%;
+}
+
+li{
+   list-style:none;
+}
+
+.box_body_status {
+	position: relative;
+	padding: 183px 0 0 0;
+	width: 320px;
+	height: 410px;
+	overflow: hidden;
+	background: url(../img/status.png) no-repeat top #004B54;
+}
+.box_body_status li {
+	float: left;
+	text-align: left;
+	padding-right: 5px;
+	color: #CCC;
+}
+
+.box_body_status .app_tit {
+	font-weight: bold;
+	padding: 5px 0;
+}
+
+.box_body_phone {
+	position: relative;
+	padding: 22px 0 0 0;
+	width: 320px;
+	height: 410px;
+	overflow: hidden;
+	background: url(../img/phone_top.png) no-repeat top #005E69;
+}
+/* 	background: url(../img/phone_top.gif) no-repeat top #111204; */
+.box_header_phone {
+	clear: both;
+	margin: 0 auto;
+	width: 320px;
+	height: 25px;
+	overflow: hidden;
+	border-left: 1px solid #dfdfdf;
+	border-bottom: 1px solid #dfdfdf;
+}
+
+.box_header_phone .tab_bg_on {
+	float: left;
+	padding: 7px 12px 0 12px;
+	background: #ffffff;
+	height: 24px;
+	font-size: 12px;
+	border-top: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+	font-size: 11px;
+	font-weight: bold;
+	color: #658b00;
+}
+
+.box_header_phone .tab_bg_on a {
+	color: #658b00;
+}
+
+.box_header_phone .tab_bg_off {
+	float: left;
+	background: #f9f9f9;
+	padding: 7px 13px 0 13px;
+	border-top: 1px solid #dfdfdf;
+	border-right: 1px solid #dfdfdf;
+	border-bottom: 1px solid #ccc;
+	height: 23px;
+	font-size: 12px;
+	color: f9f9f9;
+	font-size: 11px;
+}

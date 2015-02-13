@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="SMS">
+	<resultMap type="com.humuson.pushhelper.bean.Sms" id="selectLog">
+		<result property="sent_date" column="sent_date" />
+		<result property="rslt_date" column="rslt_date" />
+		<result property="call_to" column="call_to" />
+		<result property="msg_etc1" column="msg_etc1" />
+		<result property="msg_etc2" column="msg_etc2" />
+		<result property="msg_etc3" column="msg_etc3" />
+		<result property="rslt_code2" column="rslt_code2" />
+	</resultMap>
+	
+	<insert id="insertSMSSend" parameterType="com.humuson.pushhelper.bean.Sms">
+	<!-- 실제 SMS 메시지 발송 -->
+        INSERT INTO
+        	MSG_DATA(
+        		CUR_STATE,
+        		CALL_TO,
+        		CALL_FROM,
+        		SMS_TXT,
+        		MSG_TYPE,
+        		MSG_ETC1,
+        		MSG_ETC2
+        	)
+        	values(
+        		#{cur_state},
+        		#{call_to},
+        		#{call_from},
+        		#{sms_txt},
+        		#{msg_type},
+        		#{msg_etc1}, <!-- 그룹키가 들어가야함 -->
+        		#{msg_etc2} <!-- 추후 발송한 대상에 대하여 로그를 긁어오기 위해 '1'을 넣음 -->
+        	)
+    </insert>
+
+
+    <!-- SMS발송용 외부DB 이용하는 부분 -->
+    
+    
+    <select id="selectLog" parameterType="String" resultType="com.humuson.pushhelper.bean.Sms" resultMap="selectLog">
+    <!-- 실제 Log에서 가져올 데이터만 리스트로 조회 -->
+    	SELECT
+    		SENT_DATE,
+    		RSLT_DATE,
+    		CALL_TO,
+    		MSG_ETC1,
+    		MSG_ETC2,
+    		MSG_ETC3,
+    		RSLT_CODE2
+    	FROM MSG_LOG_201502
+    	WHERE msg_etc1 like 'pushhelper%' and msg_etc2='1' and msg_etc3='1'    		
+    </select>
+    
+    <update id="updateTargetting" parameterType="com.humuson.pushhelper.bean.Sms">
+    <!-- 실제 긁어올 대상이라는것을 표시 -->
+    	UPDATE MSG_LOG_201502 
+    	SET MSG_ETC3='1'
+    	WHERE msg_etc1 like 'pushhelper%' and msg_etc2='1'
+    </update>
+    
+    <update id="updateEndTargetSelect" parameterType="java.lang.String">
+    <!-- 긁어간 로그에 대하여 긁어갈 대상이라는 표식을 제거 즉 다음엔 조회하지 않을 대상 표시 -->
+    	UPDATE MSG_LOG_201502 
+  		SET MSG_ETC2=NULL, MSG_ETC3=NULL
+  		WHERE msg_etc1 like 'pushhelper%' and msg_etc3='1' 
+    </update>
+
+    <insert id="sendConfirmMessage" parameterType="com.humuson.pushhelper.bean.Sms">
+    <!-- ConfirmKey 발급용 메시지 발송 -->
+        insert into 
+        	MSG_DATA(
+        		cur_state,
+        		call_to,
+        		call_from,
+        		sms_txt,
+        		msg_type
+        		)
+        	values(
+        		0,
+        		#{call_to},
+        		'0000',		<!-- 임으로 0000번호로 발송 -->
+        		#{sms_txt},
+        		#{msg_type}
+        		)
+    </insert>
+</mapper> 

@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Push">
+	<resultMap type="com.humuson.pushhelper.bean.Push" id="failInfo">
+		<result property="seq" column="seq" />
+		<result property="req_uid" column="req_uid" />
+		<result property="cust_id" column="cust_id" />
+		<result property="res_cd" column="res_cd" />
+		<result property="push_msg" column="push_msg" />
+		<result property="inapp_content" column="inapp_content" />
+		<result property="smssend_check" column="smssend_check" />
+	</resultMap>
+	
+	<resultMap type="com.humuson.pushhelper.bean.Push" id="listInfo">
+		<result property="push_title" column="push_msg" />
+		<result property="inapp_content" column="inapp_content" />
+		<result property="reg_date" column="reg_date" />
+		<result property="total" column="total" />
+		<result property="success" column="success_cnt" />
+		<result property="fail" column="fail_cnt" />
+		<result property="read" column="read_cnt" />
+		<result property="click" column="click_cnt" />
+		<result property="req_uid" column="req_uid" />
+	</resultMap>
+	
+	<resultMap type="com.humuson.pushhelper.bean.DetailInfo" id="detailInfo">
+		<result property="custId" column="cust_id" />
+		<result property="reqUid" column="req_uid" />
+		<result property="regDate" column="reg_date" />
+		<result property="resultTime" column="result_time" />
+		<result property="readTime" column="read_time" />
+		<result property="clickTime" column="click_time" />
+		<result property="smsMessage" column="smsmessage" />
+		<result property="pushMessage" column="pushmessage" />
+		<result property="sentDate" column="sent_date" />
+		<result property="rsltDate" column="rslt_date" />
+		<result property="resCd" column="res_cd" />
+	</resultMap>
+
+	<!--상세결과 페이지 정보  -->
+	<select id="selectDetailResult" parameterType="String" resultMap="detailInfo">
+		SELECT
+			pr.CUST_ID, pr.REQ_UID, pr.REG_DATE, pr.RESULT_TIME, 
+			pr.READ_TIME, pr.CLICK_TIME, pe.MESSAGE AS PUSHMESSAGE, sr.SENT_DATE, 
+			sr.RSLT_DATE, se.MESSAGE AS SMSMESSAGE, pr.RES_CD
+		FROM push_raw AS pr
+		LEFT JOIN sms_raw AS sr ON pr.REQ_UID = sr.REQ_UID
+		LEFT JOIN sms_error AS se ON sr.RESULT = se.RESULT
+		LEFT JOIN push_error AS pe ON pr.RES_CD = pe.RES_CD
+	</select>
+	
+	<!--메인페이지에 보여줄 리스트 정보  -->
+	<select id="selectListResult" parameterType="int" resultMap="listInfo">
+		SELECT 
+			PUSH_MSG, INAPP_CONTENT, REG_DATE, TOTAL, SUCCESS_CNT, 
+			FAIL_CNT, READ_CNT, CLICK_CNT, REQ_UID
+		FROM push_list
+		WHERE MB_SEQ = #{mbSeq}
+	</select>
+	
+	<!--총 Total,S,F,R,C 카운트 구하기  -->
+	<select id="selectTotalCnt" parameterType="int" resultMap="listInfo">
+		SELECT
+			SUM(TOTAL) TOTAL,
+			SUM(SUCCESS_CNT) SUCCESS_CNT,
+			SUM(FAIL_CNT) FAIL_CNT,
+			SUM(READ_CNT) READ_CNT,
+			SUM(CLICK_CNT) CLICK_CNT
+		FROM push_list
+		WHERE MB_SEQ = #{mbSeq}
+	</select>
+	
+	
+	<!--Push발송정보 list테이블에 저장 -->
+	<insert id="insertPushList" parameterType="com.humuson.pushhelper.bean.Push"  >
+		INSERT INTO push_list (
+			PUSH_TITLE, PUSH_MSG, POPUP_CONTENT,
+			INAPP_CONTENT, MSG_TYPE, TOTAL, MB_SEQ, 
+			REQ_UID, EXPIRE_TIME
+		)	
+		VALUES(
+			#{push_title}, #{push_msg}, #{popup_content}, 
+			#{inapp_content}, #{msg_type}, #{total}, #{mb_seq},
+			#{req_uid}, date_add(SYSDATE(), interval +2 day )
+		)
+	</insert>
+	
+	<!-- <selectKey resultType="int" keyProperty="seq" order="AFTER">
+       		SELECT LAST_INSERT_ID() 
+    	</selectKey>  
+	 -->
+	
+	<!--Push발송정보 raw테이블에 저장  -->	
+	<insert id="insertPushRaw" parameterType="com.humuson.pushhelper.bean.Push">
+		INSERT INTO push_raw (
+			CUST_ID, REQ_UID
+		)
+		VALUES(
+			#{cust_id}, #{req_uid}
+		)
+	</insert>
+	
+	<!--S,R,C시간 업데이트 + res_cd  -->
+	<update id="updateRawResult" parameterType="com.humuson.pushhelper.bean.Push" >
+		UPDATE push_raw 
+		<set>
+			<if test="rtn_type!=null and rtn_type == &quot;S&quot;" >
+				RES_CD = #{res_cd}, RESULT_TIME = STR_TO_DATE(#{res_date},'%Y%c%d%H%i%s')
+			</if>
+			<if test="rtn_type!=null and rtn_type == &quot;R&quot;" >
+				READ_TIME = STR_TO_DATE(#{res_date},'%Y%c%d%H%i%s')
+			</if>
+			<if test="rtn_type!=null and rtn_type == &quot;C&quot;" >
+				CLICK_TIME = STR_TO_DATE(#{res_date},'%Y%c%d%H%i%s')
+			</if>
+		</set>
+		WHERE REQ_UID = #{req_uid} and CUST_ID = #{cust_id}
+	</update>
+	
+	<!-- S,F,R,C CNT 업데이트 -->
+	<update id="updateResultCnt" parameterType="com.humuson.pushhelper.bean.Push">
+		UPDATE push_list
+		SET SUCCESS_CNT = SUCCESS_CNT + #{success}, 
+			FAIL_CNT = FAIL_CNT + #{fail}, 
+			READ_CNT = READ_CNT + #{read}, 
+			CLICK_CNT = CLICK_CNT + #{click}
+		WHERE REQ_UID = #{req_uid}
+	</update>
+	
+	<!--Push전송 실패한 정보-->
+	<select id="selectFailInfo" resultMap="failInfo">
+		SELECT
+			pr.REQ_UID,
+			pr.CUST_ID,
+			pr.RES_CD,
+			pl.PUSH_MSG,
+			pl.INAPP_CONTENT
+		FROM
+			push_raw pr,
+			push_list pl
+		WHERE
+			pr.REQ_UID = pl.REQ_UID
+		AND pr.res_cd != 1000
+		AND pr.res_cd IS NOT NULL
+		AND pr.req_uid LIKE 'pushhelper%'
+		AND pr.smssend_check = 'N'
+	</select>
+	
+	<!--Push발송 후 읽거나 클릭하지 않은 수신자                                  interval 시간 바꿔야됨-->
+	<select id="selectUnCheckInfo" resultMap="failInfo">
+		SELECT
+			pr.SEQ,
+			pr.CUST_ID,
+			pr.REQ_UID,
+			pl.PUSH_MSG,
+			pl.INAPP_CONTENT,
+			pr.REG_DATE
+		FROM
+			push_raw pr,
+			push_list pl
+		WHERE
+			pr.REQ_UID = pl.REQ_UID
+		AND now() > (pr.REG_DATE + INTERVAL 2 HOUR )
+		AND pl.expire_time > now()
+		AND now() > pl.REG_DATE
+		AND smssend_check = 'N'
+		AND read_time IS NULL
+		AND click_time IS NULL
+	</select>
+	
+	
+	<!--SMS 발송 후 체크  -->
+	<update id="updateSMSCheck" parameterType="com.humuson.pushhelper.bean.Push">
+		UPDATE push_raw
+		SET SMSSEND_CHECK = 'Y'
+		WHERE
+			CUST_ID = #{cust_id} AND REQ_UID = #{req_uid}
+	</update>
+	
+	<!--sms발송 기록 남기는곳  -->
+	<insert id="insertSMSRaw" parameterType="com.humuson.pushhelper.bean.Sms">
+		INSERT INTO sms_raw (CALL_TO, REQ_UID)
+		VALUES(
+			#{call_to} , #{msg_etc1}
+		)
+	</insert>
+	
+	<!-- SMS 발송 Log로부터 실발송결과를 업데이트함 -->
+	<update id="updateSentResult" parameterType="com.humuson.pushhelper.bean.Sms">
+		UPDATE SMS_RAW
+		SET
+			result = #{rslt_code2},
+			sent_date = #{sent_date},
+			rslt_date = #{rslt_date}
+		WHERE
+			req_uid = #{msg_etc1} and <!-- msg_etc1 변수에 group_key 값을 담아와 실제 컬럼에 값을 집어넣는다 -->
+			call_to = #{call_to} 
+	</update>
+</mapper>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="SMS">
+	<resultMap type="com.humuson.pushhelper.bean.SmsStatistics" id="selectStatistics">
+		<result property="st_seq" column="st_seq" />
+		<result property="sms_txt" column="rslt_date" />
+		<result property="send_success" column="send_success" />
+		<result property="send_fail" column="send_fail" />
+		<result property="mb_seq" column="mb_seq" />
+		<result property="group_key" column="group_key" />
+		<result property="call_from" column="call_from" />
+		<result property="st_time" column="st_time" />
+		<result property="st_progress" column="st_progress" />
+	</resultMap>
+
+	
+	<resultMap type="com.humuson.pushhelper.bean.Sms" id="selectSms">
+		<result property="sent_date" column="sent_date" />
+		<result property="rslt_date" column="rslt_date" />
+		<result property="call_to" column="call_to" />
+		<result property="msg_etc1" column="message" />  <!-- 에러 메시지를 msg_etc1에 저장함 -->
+		<result property="msg_etc2" column="msg_etc2" />
+		<result property="msg_etc3" column="msg_etc3" />
+		<result property="rslt_code2" column="result" />
+	</resultMap>
+	
+
+	<!-- LocalDB 이용하는 부분 -->
+	
+	
+	<insert id="insertSendInfo" parameterType="com.humuson.pushhelper.bean.Sms"> <!-- 발송한 (전체리스트에 해당하는) 정보를 저장 -->
+		insert into
+			sms_statistics(
+				sms_txt,
+				mb_seq,
+				group_key,
+				call_from,
+				st_time
+			)
+			values(
+				#{sms_txt},
+				#{msg_type},  <!-- msg_type 변수에 mb_seq 값을 담아와 실제 컬럼에 값을 집어넣는다 -->
+				#{msg_etc1},  <!-- msg_etc1 변수에 group_key 값을 담아와 실제 컬럼에 값을 집어넣는다 -->
+				#{call_from},
+				now()
+			)	
+	</insert>
+	
+	<insert id="insertSendDetailInfo" parameterType="com.humuson.pushhelper.bean.Sms"> <!-- 발송한 상세내역 정보 저장 (상세정보) -->
+		insert into
+			sms_send_result(
+				call_to,
+				group_key
+			)
+			values(
+				#{call_to},
+				#{msg_etc1}  <!-- msg_etc1 변수에 group_key 값을 담아와 실제 컬럼에 값을 집어넣는다 -->
+			)
+	</insert>
+	
+	
+	
+	<select id="selectTarget" parameterType="java.lang.String" resultType="java.lang.String"> <!-- 그룹키를 통해 발송대상 전화번호 추출 // 현재 미사용중 -->
+		select
+			call_to
+		from sms_send_result
+			where
+				group_key = #{group_key}
+	</select>
+	
+	
+	<select id="selectStatistics" parameterType="com.humuson.pushhelper.bean.SmsStatistics" resultMap="selectStatistics"> 
+	<!-- 기간별 조회기능을 구현하려 여러 필드를 사용중이나 아직 미구현 // 전체리스트 조회 -->
+		select
+			*
+		from sms_statistics
+			where
+				mb_seq = #{mb_seq}
+		   		<if test="group_key != null and call_from != null">	<!-- group_key : 시작날짜 값으로 사용 -->
+		   			and st_time >= group_key and call_from >= st_time	<!-- call_from : 끝날짜 값으로 사용 -->
+		   		</if>
+   		order by st_seq desc
+			Limit #{send_success}, 10 <!-- ※페이징 처시리 send_success : Limit 문 시작숫자값으로 사용  -->	
+											
+	</select>
+	
+	<select id="selectNotEndedGroupKey" resultType="java.lang.String"> <!-- 아직 업데이트가 진행중인 전체발송내역의 그룹키 리스트 조회 -->
+		select
+			group_key
+		from sms_statistics
+			where
+				st_progress is NULL
+	</select>
+	
+	<update id="updateStatisticsProgress" parameterType="java.lang.String" >
+		 <!-- 
+			sms_send_result 에서 그룹키가 같고 결과코드가  NULL이 아닌(NOT NULL)인 결과(테이블)로 부터
+			발송 성공의 총합과 실패의 총합을 구하는데
+			조건이 sms_send_result의  그룹키가 같고 결과코드가 NULL인 개수가 0인
+			[ 즉 해당 그룹키가 SMS 발송 로그 테이블로부터 결과를 다 가져온 ] 상태일떄
+		  -->
+		 UPDATE sms_statistics as st
+		       CROSS JOIN 
+       					(SELECT Count(CASE
+		                                  WHEN result = '0' THEN 1
+		                                END) send_success,
+		                          Count(CASE
+		                                  WHEN result != '0' THEN 1
+		                                END) send_fail,
+		                          CASE
+		                            WHEN Count(CASE WHEN result='0' THEN 1 END) + Count(
+		                                 CASE
+		                                 WHEN result
+		                                 != '0'
+		                                 THEN 1
+		                                 END ) >= 1 THEN 1
+		                          END        progress
+		                   FROM   (SELECT result
+		                           FROM   sms_send_result
+		                           WHERE  group_key = #{group_key}
+		                                  AND result IS NOT NULL) as subdata
+		                   WHERE  (SELECT Count(sr_seq)
+		                           FROM   sms_send_result
+		                           WHERE  group_key = #{group_key}
+		                                  AND result IS NULL) = 0) as sumdata
+		SET    st.send_success = sumdata.send_success,
+		       st.send_fail = sumdata.send_fail,
+		       st.st_progress = sumdata.progress
+		WHERE  group_key = #{group_key}  
+	</update>
+	
+
+	<select id="selectResultSum" parameterType="com.humuson.pushhelper.bean.SmsStatistics" resultMap="selectStatistics">
+	<!-- 기간별 조회 기능 현재 미구현 // 통계테이블의 전송결과의 성공 실패 합과 총 글의 개수 조회  -->
+		select
+			sum(send_success) as send_success,
+			sum(send_fail) as send_fail,
+			count(st_seq) as st_seq
+		from sms_statistics
+			where
+				mb_seq = #{mb_seq}
+		   		<if test="group_key != null and call_from != null">	<!-- group_key : 시작날짜 값으로 사용 -->
+		   			and st_time >= group_key and call_from >= st_time	<!-- call_from : 끝날짜 값으로 사용 -->
+		   		</if>
+	</select>
+	
+	<select id="selectStatisticsUseGroupKey" parameterType="java.lang.String" resultMap="selectStatistics">
+	<!-- 상세 정보용(발신번호,문자내용,성공,실패값) 셀렉트 // 그룹키는 고유의값이다 즉 한개만 가져온다 -->
+		select 
+			sms_txt,
+			send_success,
+			send_fail,
+			call_from,
+			group_key
+		from sms_statistics
+			where
+				group_key = #{group_key}
+	</select>
+	
+	<select id="selectDetailInfoList" parameterType="com.humuson.pushhelper.bean.SmsStatistics" resultMap="selectSms">
+	<!-- 상세정보 조회 및 left 조인을 이용한 에러 메시지 내역 조회 
+		 성공 실패 대기 에 해당하는 내용만 조회하는 기능 현재 미구현
+	-->
+		select
+			call_to,
+			sent_date,
+			rslt_date,
+			result,
+			<![CDATA[ IFNULL(err.message,'<span class="list_result_wait">[결과대기]</span>') AS message ]]> <!-- 에러 메시지를 msg_etc1에 저장함 -->
+		from sms_send_result as rslt
+			left join sms_send_error as err
+		on
+			rslt.result = err.code		
+			where
+				group_key=#{group_key}
+				<choose>	 <!-- 성공 = 1 실패 = 2 대기 = 3 -->
+				    <when test="st_seq == 1 ">
+				        and result = '0'
+				    </when>
+				    <when test="st_seq == 2 ">
+				        and result != '0'
+				    </when>
+				    <when test="st_seq == 3 ">
+				        and result is null
+				    </when>
+				</choose>
+			Limit #{mb_seq}, 10	 <!-- ※페이징 처시or me_seq : Limit 문 시작숫자값으로 사용  -->	
+		   		
+	</select>
+	
+	<select id="selectDetailInfoCount" parameterType="com.humuson.pushhelper.bean.SmsStatistics" resultType="int"  >
+	<!-- 상세정보의 총 글(정보)개수 조회 
+		 성공 실패 대기 에 해당하는 내용만 조회하는 기능 현재 미구현 -->
+		select 
+			count(sr_seq)
+		from sms_send_result
+			where
+				group_key=#{group_key}
+				<choose>	 <!-- 성공 = 1 실패 = 2 대기 = 3 -->
+				    <when test="st_seq == 1 ">
+				        and result = '0'
+				    </when>
+				    <when test="st_seq == 2 ">
+				        and result != '0'
+				    </when>
+				    <when test="st_seq == 3 ">
+				        and result is null
+				    </when>
+				</choose>
+				
+	</select>
+   
+</mapper> 

@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	
+	<context:component-scan base-package="com.humuson.pushhelper.service" />
+	<context:component-scan base-package="com.humuson.pushhelper.controller" />
+	
+	
+	<!-- 파일 업로드를 위한 MultipartResolver 설정 -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" />
+		
+
+	<!-- Property 파일을 읽을 리더클래스 설정 -->
+	<bean id="propertyConfigurer"
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>/WEB-INF/properties/dbcp.properties</value>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- 데이터베이스 접속 설정 -->
+	<bean id="dataSourceLocal"
+		class="org.apache.ibatis.datasource.pooled.PooledDataSource">
+		<property name="driver" value="${jdbc.localDB.driverClass}"></property>
+		<property name="url" value="${jdbc.localDB.url}">
+		</property>
+		<property name="username" value="${jdbc.localDB.username}"></property>
+		<property name="password" value="${jdbc.localDB.password}"></property>
+	</bean>
+	
+	<bean id="dataSourceSMS"
+		class="org.apache.ibatis.datasource.pooled.PooledDataSource">
+		<property name="driver" value="${jdbc.smsDB.driverClass}"></property>
+		<property name="url" value="${jdbc.smsDB.url}">
+		</property>
+		<property name="username" value="${jdbc.smsDB.username}"></property>
+		<property name="password" value="${jdbc.smsDB.password}"></property>
+	</bean>
+
+	<bean id="dataSourcePush"
+		class="org.apache.ibatis.datasource.pooled.PooledDataSource">
+		<property name="driver" value="${jdbc.pushDB.driverClass}"></property>
+		<property name="url" value="${jdbc.pushDB.url}">
+		</property>
+		<property name="username" value="${jdbc.pushDB.username}"></property>
+		<property name="password" value="${jdbc.pushDB.password}"></property>
+	</bean>
+	
+	<bean id="sqlSessionfactoryLocal"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceLocal"></property>
+		<property name="configLocation"
+			value="WEB-INF/config/mybatis/local.xml">
+		</property>
+	</bean>
+	
+	<bean id="sqlSessionfactorySMS"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceSMS"></property>
+		<property name="configLocation"
+			value="WEB-INF/config/mybatis/sms.xml">
+		</property>
+	</bean>
+
+	<bean id="sqlSessionfactoryPush"
+		class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourcePush"></property>
+		<property name="configLocation"
+			value="WEB-INF/config/mybatis/push.xml">
+		</property>
+	</bean>
+	
+	<bean id="transactionManagerLocal"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceLocal"></property>
+	</bean>
+	
+	<bean id="transactionManagerSMS"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourceSMS"></property>
+	</bean>
+	
+	<bean id="transactionManagerPush"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="dataSourcePush"></property>
+	</bean>
+	
+	
+	<bean id="sqlSessionLocal"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionfactoryLocal"></constructor-arg>
+	</bean>
+	
+	<bean id="sqlSessionSMS"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionfactorySMS"></constructor-arg>
+	</bean>
+
+	<bean id="sqlSessionPush"
+		class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionfactoryPush"></constructor-arg>
+	</bean>
+	
+	<!-- 데이터베이스 접속정보 1번(Local DB) 에 맵핑될 클래스  -->
+	<bean id="memberDaoImpl" class="com.humuson.pushhelper.mapper.MemberMapperImpl">
+		<property ref="sqlSessionfactoryLocal" name="sqlSessionFactory"></property>
+	</bean>
+	
+	<bean id="smsInsideDBDaoImpl" class="com.humuson.pushhelper.mapper.SmsInsideDBMapperImpl">
+		<property ref="sqlSessionfactoryLocal" name="sqlSessionFactory"></property>
+	</bean>
+	<bean id="AppImpl" class="com.humuson.pushhelper.mapper.AppMapperImpl">
+		<property ref="sqlSessionfactoryLocal" name="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- 데이터베이스 접속정보 1번(Local DB) 에 맵핑될 클래스  -->
+	<bean id="PushLocalDBDaoImpl" class="com.humuson.pushhelper.mapper.PushLocalDBMapperImpl">
+		<property ref="sqlSessionfactoryLocal" name="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- 데이터베이스 접속정보 2번(SMS 발송) 에 맵핑될 클래스  -->
+	<bean id="SmsDBDaoImpl" class="com.humuson.pushhelper.mapper.SmsDBMapperImpl">
+		<property ref="sqlSessionfactorySMS" name="sqlSessionFactory"></property>
+	</bean>
+
+	<!-- 데이터베이스 접속정보 3번(Push 발송) 에 맵핑될 클래스  -->
+	<bean id="PushPmsDBDaoImpl" class="com.humuson.pushhelper.mapper.PushPmsDBMapperImpl">
+		<property ref="sqlSessionfactoryPush" name="sqlSessionFactory"></property>
+	</bean>
+	
+	<!-- <bean id="PushScheduler" class="com.humuson.pushhelper.scheduler.PushScheduler" />
+	<bean id="SmsScheduler" class="com.humuson.pushhelper.scheduler.SmsScheduler" />
+	
+	스케쥴 ( 반복작업 ) 관리
+	<task:scheduled-tasks>
+		<task:scheduled ref="SmsScheduler" method="updatePushResult" cron="*/30 * * * * *"/>
+		<task:scheduled ref="PushScheduler" method="failPushResult" cron="*/30 * * * * *"/>
+		<task:scheduled ref="PushScheduler" method="unCheckPushResult" cron="*/30 * * * * *"/>
+		<task:scheduled ref="PushScheduler" method="updateSMSResult" cron="*/30 * * * * *"/>
+	</task:scheduled-tasks> -->
+
+	
+</beans>

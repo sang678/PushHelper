@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Push">
+	<resultMap type="com.humuson.pushhelper.bean.Push" id="push">
+		<result property="seq" column="seq" />
+		<result property="req_uid" column="req_uid" />
+		<result property="cust_id" column="cust_id" />
+		<result property="res_cd" column="res_cd" />
+		<result property="res_date" column="res_date" />
+		<result property="rtn_type" column="rtn_type" />
+	</resultMap>
+
+
+	<resultMap type="com.humuson.pushhelper.bean.Push" id="resultCnt">
+		<result property="req_uid" column="req_uid" />
+		<result property="success" column="success" />
+		<result property="fail" column="fail" />
+		<result property="read" column="readCnt" />
+		<result property="click" column="click" />
+	</resultMap>
+	
+	<!--실제 Push 발송  -->
+	<insert id="insertPushPms" parameterType="com.humuson.pushhelper.bean.Push">
+			INSERT INTO TB_SEND_QUE (
+				biz_id,	req_uid, msg_uid, cust_id, 
+				msg_type, push_title, push_msg, popup_content, 
+				inapp_content, reserve_time, 
+				reg_date, info_na, info_cp,
+				msg_grp_cd, expire_time 
+			)
+			VALUES (
+				#{biz_id}, #{req_uid}, #{msg_uid}, #{cust_id},
+				#{msg_type}, #{push_title}, #{push_msg}, #{popup_content},
+				#{inapp_content}, DATE_FORMAT(SYSDATE(), '%Y%m%d%H%i%s'),
+				SYSDATE(), #{info_na}, #{info_cp}, 
+				#{msg_grp_cd}, DATE_FORMAT(date_add(SYSDATE(), interval + 2 DAY), '%Y%m%d%H%i%s')
+			)
+	</insert>
+	
+	<!--PMS SEND_QUE_LOG 테이블에서 정보 가져오기 -->
+	<select id="selectPmsLog" resultMap="push">
+		SELECT
+			ID AS SEQ,
+			REQ_UID,
+			CUST_ID,
+			RES_CD,
+			RES_DATE,
+			RTN_TYPE
+		FROM 
+			TB_SEND_QUE_LOG
+		WHERE 
+			REQ_UID LIKE 'pushhelper%' AND BIZ_ID = 'bed17c7c0b31478a87c7e371f2b14861'
+		ORDER BY SEQ DESC
+	</select>
+	
+	<!--PMS SEND_QUE_LOG에서 가져온 정보 지우기  -->
+	<delete id="deletePmsLog" parameterType="Long">
+		DELETE 
+		FROM TB_SEND_QUE_LOG 
+		WHERE #{seq} >= ID AND REQ_UID LIKE 'pushhelper%' AND BIZ_ID = 'bed17c7c0b31478a87c7e371f2b14861'
+	</delete>
+	
+	
+	<!--push발송 성공,실패,클릭,오픈 cnt  -->
+	<select id="selectListCnt" parameterType="Long" resultMap="resultCnt">
+		SELECT
+			REQ_UID, SUM(IF(RTN_TYPE='S' AND RES_CD='1000',1,0)) as success, 
+			SUM(IF(RTN_TYPE='S' AND RES_CD !='1000',1,0)) as fail,
+			SUM(IF(RTN_TYPE='R',1,0)) as readCnt,
+			SUM(IF(RTN_TYPE='C',1,0)) as click
+		FROM
+			TB_SEND_QUE_LOG
+		WHERE
+			#{seq} >= ID AND REQ_UID LIKE 'pushhelper%' AND BIZ_ID = 'bed17c7c0b31478a87c7e371f2b14861'
+		GROUP BY REQ_UID
+	</select>
+	
+</mapper>

@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding= "UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="Member">
+
+	<resultMap type="com.humuson.pushhelper.bean.Member" id="login">
+		<result property="mb_seq" column="mb_seq" />
+		<result property="mb_name" column="mb_name" />
+		<result property="mb_id" column="mb_id" />
+		<result property="mb_password" column="mb_password" />
+		<result property="mb_cellphone" column="mb_cellphone" />
+		<result property="mb_email" column="mb_email" />
+		<result property="mb_time" column="mb_time" />
+	</resultMap>
+    
+   
+    
+    <select id="login" parameterType="java.lang.String" resultType="com.humuson.pushhelper.bean.Member"  resultMap="login">
+    	SELECT
+    		*
+    	from member
+    		where mb_id = #{mb_id}
+    </select>
+    
+    <select id="getMemberPassword" parameterType="java.lang.String" resultType="java.lang.String" >
+    	SELECT mb_password
+    	FROM member
+    	WHERE mb_id = #{memberId}
+    </select>
+    
+    <select id="checkId" parameterType="java.lang.String" resultType="java.lang.Integer" >
+    	select 
+    		count(mb_id)
+    	from member
+    		where mb_id = #{id}
+    </select>
+    
+    
+    <insert id="newAccount" parameterType="com.humuson.pushhelper.bean.Member" >
+    	INSERT INTO member(
+   			mb_name,
+   			mb_id,
+   			mb_password,
+   			mb_cellphone,
+   			mb_email,
+   			mb_time
+    	) VALUES(
+   			#{mb_name},
+   			#{mb_id},
+   			#{mb_password},
+   			#{mb_cellphone},
+   			#{mb_email},
+   			now()   			
+   		)
+    </insert>
+
+  
+</mapper> 
