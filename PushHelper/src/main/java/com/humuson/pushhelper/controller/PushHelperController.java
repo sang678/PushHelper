@@ -118,19 +118,41 @@ public class PushHelperController {
 			
 			
 			
-			//mv = showStatisticsList(loginUser.getMb_seq());
-			/*SmsStatistics pageInfo = new SmsStatistics(0, null, 0, 0, loginUser.getMb_seq(), null, null, null,null) ;
-			mv.addObject("statisticsList",pushhelperService.selectSmsStatistics(pageInfo));
-			SmsStatistics temp = pushhelperService.selectResultSum(pageInfo);
-			pageInfo.setSt_seq(temp.getSt_seq());
-			pageInfo.setSend_success(temp.getSend_success());
-			pageInfo.setSend_fail(temp.getSend_fail());
-			mv.addObject("pageInfo",pageInfo);*/
+			//mv = pushhelperService.selectListResult(loginUser.getMb_seq());
+//			SmsStatistics pageInfo = new SmsStatistics(0, null, 0, 0, loginUser.getMb_seq(), null, null, null,null) ;
+//			mv.addObject("statisticsList",pushhelperService.selectSmsStatistics(pageInfo));
+//			SmsStatistics temp = pushhelperService.selectResultSum(pageInfo);
+//			pageInfo.setSt_seq(temp.getSt_seq());
+//			pageInfo.setSend_success(temp.getSend_success());
+//			pageInfo.setSend_fail(temp.getSend_fail());
+//			mv.addObject("pageInfo",pageInfo);
 		}
 
 		mv.setViewName("main");
 		
 		return mv;
+	}
+	
+	public ModelAndView selectListResult(HttpSession session, @RequestParam("page") int page){
+		
+//		ModelAndView mv = new ModelAndView();
+//		
+//		Push pageInfo = 
+//				new SmsStatistics(0, null, (page-1)*10, 0, 
+//						((Member)session.getAttribute("loginUser")).getMb_seq(),	null, null, null,null) ;
+//		
+//		mv.addObject("statisticsList",pushhelperService.selectSmsStatistics(pageInfo));
+//		SmsStatistics temp = pushhelperService.selectResultSum(pageInfo);
+//		pageInfo.setSt_seq(temp.getSt_seq());
+//		pageInfo.setSend_success(temp.getSend_success());
+//		pageInfo.setSend_fail(temp.getSend_fail());
+//		mv.addObject("pageInfo",pageInfo);
+//		
+//		mv.setViewName("main");
+		
+		
+		return null;
+		
 	}
 
 	

@@ -9,7 +9,7 @@ span.validateText { color : blue; font-size:11pt; }
 /* Section */
 div#article1 { text-align : center }
 #section #list ul {list-style : none; padding:0px; }
-#section #list ul li {list-style : none; overflow:hidden; text-overflow:ellipsis; font-weight:bold;  width:100%; white-space:nowrap; }
+#section #list ul li {list-style : none; overflow:hidden; text-overflow:ellipsis; font-weight:bold;  width:100%; white-space:nowrap; line-height: 1.2}
 #section #list ul .data_list_color1 { background-color : #F7F7F7 }
 #section #list ul .data_list_color2 { background-color : #FFFFFF }
 #section #list ul .list_title { font-size:18px; color:#2D5373; height:20px; cursor:pointer;}

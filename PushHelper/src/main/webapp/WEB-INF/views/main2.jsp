@@ -2,33 +2,25 @@
     pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
-
- <%@ taglib  uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %> 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
-
 <head>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<!-- 부트스트랩 -->
     <link href="../resources/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <!-- jQuery (부트스트랩의 자바스크립트 플러그인을 위해 필요한) -->
-    <script src="//code.jquery.com/jquery.js"></script>
+    <script src="../resources/js/jquery-1.11.2.min.js"></script>
     <!-- 모든 합쳐진 플러그인을 포함하거나 (아래) 필요한 각각의 파일들을 포함하세요 -->
-    <script src="../js/bootstrap.min.js"></script>
- 
+    <script src="../resources/js/bootstrap.min.js"></script>
     <!-- Respond.js 으로 IE8 에서 반응형 기능을 활성화하세요 (https://github.com/scottjehl/Respond) -->
     <script src="../resources/js/respond.min.js"></script>
-
-
 	<!-- main페이지용 css -->
 	<link href="../resources/css/sendit.css" rel="stylesheet" />
+	<link href="../resources/css/push.css" rel="stylesheet" />
 
-	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-	
-	<title>Send it - 나의 발송내역</title>
-	
-	<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+	<title>Push Helper - 나의 발송내역</title>
+	<!-- <script type="text/javascript" src="https://www.google.com/jsapi"></script>
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
@@ -36,8 +28,8 @@
 
         var data = google.visualization.arrayToDataTable([
           ['Task', 'Hours per Day'],
-          ['성공',     <c:out value="${pageInfo.send_success}" />],
-          ['실패',      <c:out value="${pageInfo.send_fail}" />]
+          /* ['성공',     <c:out value="${pageInfo.send_success}" />],
+          ['실패',      <c:out value="${pageInfo.send_fail}" />] */
         ]);
 
         var options = {
@@ -48,16 +40,17 @@
 
         chart.draw(data, options);
       }
-    </script>
-	
-
+    </script> -->
 </head>
-
 <body>
 	<div class="container">
 		<%@ include file="header/header.jsp" %>
 		<div id="section" style="margin:0 auto">
 			<div id="article1">
+			<form action="detailInfo.do" method="POST" id="di">
+				<input type="hidden" id="reqUid" name="reqUid">
+			</form>
+			
 				<span class="btn btn-success" onClick="location.href='writePush.do';">Push 발송</span>
 				
 				<h1>총 발송 내역</h1><br/>
@@ -77,15 +70,33 @@
 						</tr>
 					</tbody>
 				</table>
-				<div id="chart" class="">
-				</div>
 			</div>
-			<br />
-			
-			<div id="article2">
-				<div style="text-align:right;display:block" ><span class="btn btn-success" onClick="location.href='loadSendMessage.do';">발송하기</span></div><br id="useAppend" />
 				
-				<c:forEach var="list" items="${listInfo}">
+			<div id="chart" class="">
+					
+			</div>
+			
+			
+			<div class=article-list style="text-align: center">
+				<br>
+					<h1>발송 결과</h1>
+				<br>
+				<div class="table-responsive ">
+					<table class="table table-condensed">
+						<thead>
+							<tr align="center" bgcolor="#757575" style="color: white">
+								<td style="width: 20%"><b>발송일시</b></td>
+								<td style="width: 45%"><b>메시지</b></td>
+								<td style="width: 10%"><b>총 발송수</b></td>
+								<td style="width: 5%"><b>성공</b></td>
+								<td style="width: 5%"><b>실패</b></td>
+								<td style="width: 5%"><b>오픈</b></td>
+								<td style="width: 5%"><b>클릭</b></td>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<c:forEach var="list" items="${listInfo}">
 							<tr align="center">
 								<td class="tal"><c:out value="${list.reg_date}" /></td>
 								<td class="listResult" onclick="detailPageInfo('<c:out value='${list.req_uid}'/>')"><c:out value="${list.push_title}" /></td>
@@ -95,106 +106,29 @@
 								<td class="tal"><c:out value="${list.read}" /></td>
 								<td class="tal"><c:out value="${list.click}" /></td>
 							</tr>
-				</c:forEach>
-				
-				<div id="list">
-					<ul>
-						<c:forEach var="bean" items="${listInfo}" varStatus="status"> 					<!-- forEach 문 시작  -->
-							<c:set var="successAverage" value="${bean.success/bean.total}" />
-							<c:set var="failAverage" value="${bean.fail/bean.total}" />
-							<li class="data_list data_list_color${status.index % 2}"  >
-								<span class="list_title"
-									onClick="showDetail('<c:out value='${bean.req_uid}'/>')" >
-								<c:out value="${bean.push_title}" /></span><br />
-								<%-- <c:if test="${bean.st_progress == 0  || bean.st_progress == null}"><img class="pull-right" style="width:71px;height:71px;" src="../resources/img/progressCircle.gif"/></c:if><br> --%>
-								<span class="list_time"><c:out value="${bean.reg_date}" /></span> <br />
-								<span class="list_info">
-									 총합 : <span class="list_sum">${bean.total}</span> 
-									| 성공 : <span class="list_success">
-													${bean.success }
-													( 
-														<c:choose>
-															<c:when test="${successAverage =='NaN'}">0.0</c:when>
-															<c:otherwise>${successAverage*100 }</c:otherwise>
-														</c:choose>
-													
-													% )
-											 </span> 
-									| 실패 :  <span class="list_fail">${bean.fail } 
-									
-													( 
-	
-														<c:choose>
-															<c:when test="${failAverage =='NaN'}">0</c:when>
-															<c:otherwise>${failAverage*100 }</c:otherwise>
-														</c:choose>
-													
-													% )
-
-											  </span>
-								</span>
-							</li>
-						</c:forEach>  					<!-- forEach 문 종료  -->
-						<c:if test="${ fn:length(statisticsList) == 0 }"  >
-							<li><h1>발송 내역이 없습니다.</h1></li>
-						</c:if>
-					</ul>	
+							</c:forEach>
+						</tbody>
+					</table>
 				</div>
-				<c:if test="${ fn:length(statisticsList) >=1 }"  >
-					<fmt:parseNumber var="lastPage" integerOnly= "true" value="${(pageInfo.st_seq / 10) + (pageInfo.st_seq % 10 == 0 ? 0 : 1 ) } " />
-					<input type="hidden" id="lastPageNo" value="<c:out value='${lastPage}' />" />
-					<div id="paging" style="text-align:center">
-						<ul class="pagination">
-						  <li><a  id="page0" onClick="pagingProcess(0)">«</a></li>
-							 <c:if test="${lastPage >= 1}">
-							  	<li class="active"><a  id="page1" onClick="pagingProcess(1)">1</a></li>
-							 </c:if>
-							 <c:if test="${lastPage >= 2}">
-							  	<li><a  id="page2" onClick="pagingProcess(2)">2</a></li>
-							 </c:if>
-							 <c:if test="${lastPage >= 3}">
-							  	<li><a  id="page3" onClick="pagingProcess(3)">3</a></li>
-							 </c:if>
-							 <c:if test="${lastPage >= 4}">
-							  	<li><a  id="page4" onClick="pagingProcess(4)">4</a></li>
-							 </c:if>
-						  	 <c:if test="${lastPage >= 5}">
-							    <li><a  id="page5" onClick="pagingProcess(5)">5</a></li>
-							 </c:if>
-						  <li><a  id="page6" onClick="pagingProcess(6)">»</a></li>
-						</ul>
-					</div>
-				</c:if>
 			</div>
 		</div>
-	</div>
-	<form action="showSmsDetail.do" method="POST" id="f">
-		<input type="hidden" id="group_key" name="group_key" />
-		<input type="hidden" id="detail_success" name="detail_success" />
-		<input type="hidden" id="detail_fail" name="detail_fail" />
-		<input type="hidden" id="detail_txt" name="detail_txt" />
-		<input type="hidden" id="call_from" name="call_from" />
-	</form>
+	</div>  <!--container  -->
 	
 </body>
-
 </html>
 
 
 <script type="text/javascript">
 $('#moveMain').remove()
 
-function showDetail(group_key)
-{
+function detailPageInfo(reqUid){
 
-	$("#group_key").val(group_key);
-
-	$("#f").submit();
+	$("#reqUid").val(reqUid);
+	$("#di").submit();
 	
 }
 
-function pagingProcess(pageNo)
-{
+function pagingProcess(pageNo) {
 	lastPageNo =  $("#lastPageNo").val();
 	
 	var page;
@@ -243,8 +177,6 @@ function pagingProcess(pageNo)
 			page = pageNo
 		
 	}
-
-	
 	
 	 $.ajax({
 			type:"POST",

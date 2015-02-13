@@ -53,13 +53,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		LEFT JOIN push_error AS pe ON pr.RES_CD = pe.RES_CD
 	</select>
 	
-	<!--메인페이지에 보여줄 리스트 정보  -->
-	<select id="selectListResult" parameterType="int" resultMap="listInfo">
+	<!-- 메인페이지에 보여줄 리스트 정보  -->
+	<!-- success : 페이지 번호용  -->
+	<select id="selectListResult" parameterType="com.humuson.pushhelper.bean.Push" resultMap="listInfo">
 		SELECT 
 			PUSH_MSG, INAPP_CONTENT, REG_DATE, TOTAL, SUCCESS_CNT, 
 			FAIL_CNT, READ_CNT, CLICK_CNT, REQ_UID
 		FROM push_list
 		WHERE MB_SEQ = #{mbSeq}
+		Limit #{success}, 10
+
 	</select>
 	
 	<!--총 Total,S,F,R,C 카운트 구하기  -->

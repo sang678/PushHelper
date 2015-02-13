@@ -30,8 +30,10 @@
 					<div style="width:230px; margin:auto; padding:30px 30px; padding-top:15px;">
 						<h1>Push Helper</h1><br />
 						<form action="j_spring_security_check" method="POST" >
-							<input type="id" id="id" class="form-control" name="j_username" placeholder="아이디" /> <br />
-							<input type="password" id="pw" class="form-control" name="j_password" placeholder="비밀번호" /><br />
+							<input type="id" id="id" class="form-control" name="j_username" placeholder="아이디" />
+							<br />
+							<input type="password" id="pw" class="form-control" name="j_password" placeholder="비밀번호" />
+							<br />
 							<button style="width:100%; height:50px;" class="btn btn-success">로그인</button>
 						</form>
 					</div>
