@@ -38,6 +38,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="sentDate" column="sent_date" />
 		<result property="rsltDate" column="rslt_date" />
 		<result property="resCd" column="res_cd" />
+		<result property="result" column="result" />
 	</resultMap>
 
 	<!--상세결과 페이지 정보  -->
